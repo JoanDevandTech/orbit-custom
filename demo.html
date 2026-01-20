@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit Tabs - Demo</title>
+
+    <!-- Orbit Tabs CSS -->
+    <link rel="stylesheet" href="includes/widgets/orbit-tabs/assets/orbit-tabs.css">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #000;
+            /* Fallback para navegadores que no soportan gradientes */
+            background:
+                radial-gradient(circle at 27% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 80%),
+                radial-gradient(circle at 99% 33%, rgba(169, 1, 219, 1) 0%, rgba(169, 1, 219, 0) 80%),
+                /* Morado */
+                radial-gradient(circle at 99% 45%, rgba(88, 20, 225, 1) 0%, rgba(88, 20, 225, 0) 80%),
+                /* Azul */
+                radial-gradient(circle at 57% 21%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 80%),
+                radial-gradient(circle at 61% 36%, rgba(169, 1, 219, 1) 0%, rgba(169, 1, 219, 0) 80%),
+                /* Morado */
+                radial-gradient(circle at 32% 17%, rgba(88, 20, 225, 1) 0%, rgba(88, 20, 225, 0) 80%),
+                /* Azul */
+                radial-gradient(circle at 48% 33%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 80%),
+                radial-gradient(circle at 29% 84%, rgba(169, 1, 219, 1) 0%, rgba(169, 1, 219, 0) 80%),
+                /* Morado */
+                radial-gradient(circle at 29% 76%, rgba(88, 20, 225, 1) 0%, rgba(88, 20, 225, 0) 80%),
+                /* Azul */
+                radial-gradient(circle at 80% 83%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 80%),
+                radial-gradient(circle at 27% 13%, rgba(169, 1, 219, 1) 0%, rgba(169, 1, 219, 0) 80%);
+            /* Morado */
+            background-attachment: fixed;
+            /* Mantiene el fondo fijo al hacer scroll */
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Joan Dev & Tech | Polaroid Tabs</h1>
+
+    <!-- Orbit Tabs Widget -->
+    <div class="orbit-tabs-container" id="demo-tabs">
+        <div class="orbit-tabs-wrapper">
+
+            <!-- Left Column Tabs -->
+            <div class="orbit-tabs-left" role="tablist" aria-label="Orbit Tabs Navigation">
+                <button class="orbit-tab-button" role="tab" aria-selected="true" tabindex="0">
+                    Services
+                </button>
+                <button class="orbit-tab-button" role="tab" aria-selected="false" tabindex="-1">
+                    Projects
+                </button>
+            </div>
+
+            <!-- Central Stage (Carousel) - SINGLE STACK FOR ALL IMAGES -->
+            <div class="orbit-tabs-stage">
+                <div class="orbit-polaroid-stack">
+                    <!-- Image 1 -->
+                    <div class="orbit-polaroid">
+                        <img src="https://picsum.photos/400/500?random=1" alt="Creative Design">
+                        <a href="#" class="orbit-polaroid-cta">View Project</a>
+                    </div>
+
+                    <!-- Image 2 -->
+                    <div class="orbit-polaroid">
+                        <img src="https://picsum.photos/400/500?random=2" alt="Development">
+                        <a href="#" class="orbit-polaroid-cta">Learn More</a>
+                    </div>
+
+                    <!-- Image 3 -->
+                    <div class="orbit-polaroid">
+                        <img src="https://picsum.photos/400/500?random=3" alt="Marketing">
+                        <a href="#" class="orbit-polaroid-cta">Explore</a>
+                    </div>
+
+                    <!-- Image 4 -->
+                    <div class="orbit-polaroid">
+                        <img src="https://picsum.photos/400/500?random=4" alt="Photography">
+                        <a href="#" class="orbit-polaroid-cta">Gallery</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column Tabs -->
+            <div class="orbit-tabs-right" role="tablist" aria-label="Orbit Tabs Navigation">
+                <button class="orbit-tab-button" role="tab" aria-selected="false" tabindex="-1">
+                    Marketing
+                </button>
+                <button class="orbit-tab-button" role="tab" aria-selected="false" tabindex="-1">
+                    Development
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <!-- Orbit Tabs JS -->
+    <script src="includes/widgets/orbit-tabs/assets/orbit-tabs.js"></script>
+</body>
+
+</html>

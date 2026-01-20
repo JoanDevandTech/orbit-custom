@@ -4,7 +4,7 @@
  * Plugin URI: https://joandev.com/orbit-customs
  * Description: Custom visual components including Polaroid Tabs with stunning animations and Elementor integration
  * Author: Joan Dev & Tech
- * Version: 1.1.1
+ * Version: 1.2.7
  * Author URI: https://joandev.com
  * Text Domain: orbit-customs
  * License: GPLv2 or later
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('ORBIT_CUSTOMS_VERSION', '1.1.1');
+define('ORBIT_CUSTOMS_VERSION', '1.2.7');
 define('ORBIT_CUSTOMS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ORBIT_CUSTOMS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -115,6 +115,15 @@ class Orbit_Customs
      */
     public function register_assets()
     {
+        // Register GSAP library (required for carousel effect)
+        wp_register_script(
+            'gsap',
+            'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js',
+            array(),
+            '3.12.5',
+            true
+        );
+
         foreach ($this->widgets as $widget_id => $widget_config) {
             if (isset($widget_config['assets'])) {
                 // Register CSS
@@ -127,12 +136,12 @@ class Orbit_Customs
                     );
                 }
 
-                // Register JS
+                // Register JS with GSAP dependency
                 if (isset($widget_config['assets']['js'])) {
                     wp_register_script(
                         $widget_id,
                         ORBIT_CUSTOMS_PLUGIN_URL . 'includes/' . $widget_config['assets']['js'],
-                        array('jquery'),
+                        array('jquery', 'gsap'),
                         ORBIT_CUSTOMS_VERSION,
                         true
                     );

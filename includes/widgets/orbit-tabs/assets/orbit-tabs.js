@@ -1,83 +1,55 @@
 /**
- * Orbit Polaroid Tabs - JavaScript Controller
- * Handles tab navigation, ARIA attributes, and smooth transitions
+ * Orbit Polaroid Tabs - Simplified GSAP Carousel
+ * 3-card carousel: previous, active, next
  */
 
 (function () {
 	'use strict';
 
 	/**
-	 * Initialize all Orbit Tabs instances on the page
+	 * Initialize all Orbit Tabs instances
 	 */
 	function initOrbitTabs() {
 		const containers = document.querySelectorAll('.orbit-tabs-container');
-
 		containers.forEach(container => {
 			new OrbitTabsController(container);
 		});
 	}
 
 	/**
-	 * Orbit Tabs Controller Class
+	 * Orbit Tabs Controller
 	 */
 	class OrbitTabsController {
 		constructor(container) {
 			this.container = container;
 			this.buttons = container.querySelectorAll('.orbit-tab-button');
-			this.panels = container.querySelectorAll('.orbit-tab-content');
+			this.cards = gsap.utils.toArray(container.querySelectorAll('.orbit-polaroid'));
+			this.currentIndex = 0;
 
-			if (this.buttons.length === 0 || this.panels.length === 0) {
+			if (this.cards.length === 0) {
 				return;
 			}
 
 			this.init();
 		}
 
-		/**
-		 * Initialize the controller
-		 */
 		init() {
-			// Set up click handlers
+			// Set initial state - all cards hidden
+			gsap.set(this.cards, {
+				xPercent: 300,
+				opacity: 0,
+				scale: 0.7,
+				zIndex: 0
+			});
+
+			// Tab buttons control carousel
 			this.buttons.forEach((button, index) => {
-				button.addEventListener('click', () => this.switchTab(index));
+				button.addEventListener('click', () => {
+					this.switchToTab(index);
+				});
 			});
 
-			// Set up keyboard navigation
-			this.setupKeyboardNavigation();
-
-			// Activate first tab by default
-			this.switchTab(0);
-		}
-
-		/**
-		 * Switch to a specific tab
-		 */
-		switchTab(index) {
-			// Deactivate all tabs
-			this.buttons.forEach(btn => {
-				btn.setAttribute('aria-selected', 'false');
-				btn.setAttribute('tabindex', '-1');
-			});
-
-			this.panels.forEach(panel => {
-				panel.setAttribute('aria-hidden', 'true');
-			});
-
-			// Activate selected tab
-			if (this.buttons[index] && this.panels[index]) {
-				this.buttons[index].setAttribute('aria-selected', 'true');
-				this.buttons[index].setAttribute('tabindex', '0');
-				this.panels[index].setAttribute('aria-hidden', 'false');
-
-				// Focus the activated button for accessibility
-				this.buttons[index].focus();
-			}
-		}
-
-		/**
-		 * Set up keyboard navigation (Arrow keys)
-		 */
-		setupKeyboardNavigation() {
+			// Keyboard navigation
 			this.buttons.forEach((button, index) => {
 				button.addEventListener('keydown', (e) => {
 					let newIndex = index;
@@ -87,43 +59,116 @@
 						case 'ArrowDown':
 							e.preventDefault();
 							newIndex = (index + 1) % this.buttons.length;
-							this.switchTab(newIndex);
 							break;
-
 						case 'ArrowLeft':
 						case 'ArrowUp':
 							e.preventDefault();
 							newIndex = (index - 1 + this.buttons.length) % this.buttons.length;
-							this.switchTab(newIndex);
 							break;
-
 						case 'Home':
 							e.preventDefault();
-							this.switchTab(0);
+							newIndex = 0;
 							break;
-
 						case 'End':
 							e.preventDefault();
-							this.switchTab(this.buttons.length - 1);
+							newIndex = this.buttons.length - 1;
 							break;
+						default:
+							return;
 					}
+
+					this.switchToTab(newIndex);
 				});
+			});
+
+			// Show first tab
+			this.switchToTab(0);
+		}
+
+		/**
+		 * Switch to specific tab - shows 3 cards: prev, active, next
+		 */
+		switchToTab(index) {
+			this.currentIndex = index;
+			const totalCards = this.cards.length;
+
+			// Update button states
+			this.buttons.forEach((btn, i) => {
+				if (i === index) {
+					btn.setAttribute('aria-selected', 'true');
+					btn.setAttribute('tabindex', '0');
+				} else {
+					btn.setAttribute('aria-selected', 'false');
+					btn.setAttribute('tabindex', '-1');
+				}
+			});
+
+			// Animate all cards to their positions
+			this.cards.forEach((card, i) => {
+				const relativePos = i - index;
+
+				if (relativePos === -1 || (index === 0 && i === totalCards - 1)) {
+					// Previous card - left position (closer and smaller)
+					gsap.to(card, {
+						xPercent: -70,
+						opacity: 0.4,
+						scale: 0.75,
+						rotationY: 20,
+						rotationZ: -6,
+						zIndex: 1,
+						duration: 0.6,
+						ease: 'power2.out'
+					});
+				} else if (relativePos === 0) {
+					// Active card - center position (largest and prominent)
+					gsap.to(card, {
+						xPercent: 0,
+						opacity: 1,
+						scale: 1,
+						rotationY: 0,
+						rotationZ: 0,
+						zIndex: 3,
+						duration: 0.6,
+						ease: 'power2.out'
+					});
+				} else if (relativePos === 1 || (index === totalCards - 1 && i === 0)) {
+					// Next card - right position (closer and smaller)
+					gsap.to(card, {
+						xPercent: 70,
+						opacity: 0.4,
+						scale: 0.75,
+						rotationY: -20,
+						rotationZ: 6,
+						zIndex: 1,
+						duration: 0.6,
+						ease: 'power2.out'
+					});
+				} else {
+					// Hidden cards
+					const direction = i < index ? -1 : 1;
+					gsap.to(card, {
+						xPercent: direction * 300,
+						opacity: 0,
+						scale: 0.7,
+						rotationY: direction * 30,
+						rotationZ: direction * -10,
+						zIndex: 0,
+						duration: 0.6,
+						ease: 'power2.out'
+					});
+				}
 			});
 		}
 	}
 
-	/**
-	 * Initialize on DOM ready
-	 */
+	// Initialize
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', initOrbitTabs);
 	} else {
 		initOrbitTabs();
 	}
 
-	/**
-	 * Re-initialize when Elementor preview updates
-	 */
+	// Elementor support
 	if (typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.hooks) {
 		window.elementorFrontend.hooks.addAction('frontend/element_ready/orbit-tabs.default', function ($scope) {
 			const container = $scope[0].querySelector('.orbit-tabs-container');
@@ -133,16 +178,17 @@
 		});
 	}
 
-	// Also initialize on Elementor preview load
-	jQuery(window).on('elementor/frontend/init', function () {
-		if (typeof elementorFrontend !== 'undefined') {
-			elementorFrontend.hooks.addAction('frontend/element_ready/orbit-tabs.default', function ($scope) {
-				const container = $scope[0].querySelector('.orbit-tabs-container');
-				if (container) {
-					new OrbitTabsController(container);
-				}
-			});
-		}
-	});
+	if (typeof jQuery !== 'undefined') {
+		jQuery(window).on('elementor/frontend/init', function () {
+			if (typeof elementorFrontend !== 'undefined') {
+				elementorFrontend.hooks.addAction('frontend/element_ready/orbit-tabs.default', function ($scope) {
+					const container = $scope[0].querySelector('.orbit-tabs-container');
+					if (container) {
+						new OrbitTabsController(container);
+					}
+				});
+			}
+		});
+	}
 
 })();

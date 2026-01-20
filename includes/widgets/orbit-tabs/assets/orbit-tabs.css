@@ -1,21 +1,14 @@
 /**
- * Orbit Polaroid Tabs Component Styles
- * Professional tabbed navigation with Polaroid-style image gallery
+ * Orbit Polaroid Tabs - Simplified for GSAP Carousel
  */
 
 /* ========================================
-   VARIABLES & RESET
+   VARIABLES
    ======================================== */
 :root {
     --orbit-tabs-spacing: 2rem;
     --orbit-tabs-border-radius: 4px;
     --orbit-tabs-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --orbit-polaroid-border: 12px;
-    --orbit-polaroid-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    --orbit-overlay-gradient: radial-gradient(ellipse at center,
-            rgba(0, 0, 0, 0) 0%,
-            rgba(0, 0, 0, 0.3) 70%,
-            rgba(0, 0, 0, 0.5) 100%);
 }
 
 /* ========================================
@@ -32,33 +25,25 @@
 
 /* ========================================
    GRID LAYOUT - DESKTOP
-   EDIT HERE to change spacing between columns
    ======================================== */
 .orbit-tabs-wrapper {
     display: grid;
     grid-template-columns: auto 1fr auto;
-    /* LEFT | CENTER | RIGHT */
     gap: 2rem;
-    /* Space between columns */
     align-items: center;
     min-height: 500px;
 }
 
 /* ========================================
-   LATERAL COLUMNS (TAB CONTROLS)
-   EDIT HERE to change tab button spacing
+   LATERAL COLUMNS (TAB BUTTONS)
    ======================================== */
 .orbit-tabs-left,
 .orbit-tabs-right {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    /* Space between tab buttons */
+    gap: 1.25rem;
 }
 
-/* ========================================
-   TAB BUTTON STYLES
-   ======================================== */
 .orbit-tab-button {
     background: #ffffff;
     border: none;
@@ -70,29 +55,25 @@
     cursor: pointer;
     transition: var(--orbit-tabs-transition);
     box-shadow: none;
+    position: relative;
+    z-index: 10;
     white-space: normal;
     word-wrap: break-word;
 }
 
-/* ========================================
-   TEXT ALIGNMENT BY COLUMN
-   EDIT HERE to change tab text alignment
-   ======================================== */
-/* LEFT COLUMN TABS - Align text to the left */
+/* LEFT COLUMN TABS */
 .orbit-tabs-left .orbit-tab-button {
     text-align: left;
 }
 
-/* RIGHT COLUMN TABS - Align text to the right */
+/* RIGHT COLUMN TABS */
 .orbit-tabs-right .orbit-tab-button {
     text-align: right;
 }
 
 .orbit-tab-button:hover {
-    border-color: transparent;
     background: #f5f9ff;
     transform: translateX(4px);
-    box-shadow: none;
 }
 
 .orbit-tabs-right .orbit-tab-button:hover {
@@ -102,8 +83,6 @@
 .orbit-tab-button[aria-selected="true"] {
     background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
     color: #ffffff;
-    border-color: transparent;
-    box-shadow: none;
 }
 
 .orbit-tab-button:focus {
@@ -111,122 +90,84 @@
 }
 
 /* ========================================
-   CENTRAL STAGE (CONTENT AREA)
+   CENTRAL STAGE - CAROUSEL CONTAINER
    ======================================== */
 .orbit-tabs-stage {
     position: relative;
-    min-height: 500px;
+    min-height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
+    overflow-x: hidden;
+    overflow-y: visible;
 }
 
-/* Overlay gradient (vignette effect) - Optional */
-.orbit-tabs-stage.has-overlay::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--orbit-overlay-gradient);
-    pointer-events: none;
-    z-index: 1;
-    border-radius: 8px;
-}
-
-/* ========================================
-   TAB CONTENT PANELS
-   ======================================== */
+/* Tab content wrapper */
 .orbit-tab-content {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 600px;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.4s ease, z-index 0s 0.4s;
-    z-index: 1;
-}
-
-.orbit-tab-content[aria-hidden="false"] {
-    z-index: 10;
-    transition: opacity 0.4s ease, z-index 0s;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ========================================
-   POLAROID IMAGE DISPLAY
-   EDIT HERE to change image size and effects
+   POLAROID CAROUSEL (like CodePen demo)
    ======================================== */
 .orbit-polaroid-stack {
     position: relative;
-    width: 100%;
-    height: 450px;
-    /* Height of image area */
-    perspective: 1000px;
+    width: 16rem;
+    height: 21rem;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 .orbit-polaroid {
+    list-style: none;
+    padding: 16px;
+    padding-bottom: 40px;
+    margin: 0;
+    width: 100%;
+    height: auto;
+    text-align: center;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    /* Center the image */
+    top: 0;
+    left: 0;
     background: #ffffff;
-    /* Polaroid white border */
-    padding: var(--orbit-polaroid-border);
-    /* Border size (12px) */
-    padding-bottom: calc(var(--orbit-polaroid-border) * 2.5);
-    /* Extra bottom space */
-    box-shadow: var(--orbit-polaroid-shadow);
-    /* Shadow effect */
-    border-radius: 2px;
-    transition: var(--orbit-tabs-transition);
+    border-radius: 0.8rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    max-width: 320px;
-    /* Maximum image width */
-    opacity: 1;
-    /* Full opacity */
-    z-index: 2;
-}
-
-/* ========================================
-   HOVER EFFECT
-   EDIT HERE to change hover animation
-   ======================================== */
-.orbit-polaroid:hover {
-    transform: translate(-50%, -50%) scale(1.05);
-    /* Slight zoom on hover */
-    z-index: 10;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
-    /* Stronger shadow */
 }
 
 .orbit-polaroid img {
-    display: block;
     width: 100%;
     height: auto;
+    max-height: none;
+    opacity: 1;
+    display: block;
+    margin: 0 auto;
+    border-radius: 0.4rem;
     object-fit: cover;
-    object-position: center center;
-    border-radius: 1px;
+}
+
+.orbit-polaroid:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
 /* ========================================
-   CTA BUTTON (FLOATING TAG)
+   CTA BUTTON
    ======================================== */
 .orbit-polaroid-cta {
     position: absolute;
-    bottom: -15px;
-    right: -15px;
+    bottom: -10px;
+    right: -10px;
     background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
     color: #ffffff;
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1.2rem;
     border-radius: 24px;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-decoration: none;
     box-shadow: 0 4px 16px rgba(33, 150, 243, 0.4);
     transform: rotate(8deg);
@@ -237,87 +178,26 @@
 
 .orbit-polaroid-cta:hover {
     transform: rotate(0deg) scale(1.1);
-    box-shadow: none;
 }
 
 /* ========================================
-   CTA BUTTON POSITIONING
+   RESPONSIVE - TABLET/MOBILE
    ======================================== */
-/* Top positions */
-.cta-position-top-left .orbit-polaroid-cta {
-    top: 1rem;
-    left: 1rem;
-    right: auto;
-    bottom: auto;
+
+/* Small laptops (1081px - 1280px) - Container ~1100px */
+@media (max-width: 1280px) and (min-width: 1081px) {
+    .orbit-polaroid-stack {
+        width: 14rem;
+        height: 18rem;
+    }
+
+    .orbit-polaroid img {
+        max-height: 15.5rem;
+    }
 }
 
-.cta-position-top-center .orbit-polaroid-cta {
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%) rotate(-3deg);
-    right: auto;
-    bottom: auto;
-}
-
-.cta-position-top-right .orbit-polaroid-cta {
-    top: 1rem;
-    right: 1rem;
-    left: auto;
-    bottom: auto;
-}
-
-/* Center positions */
-.cta-position-center-left .orbit-polaroid-cta {
-    top: 50%;
-    left: 1rem;
-    transform: translateY(-50%) rotate(-3deg);
-    right: auto;
-    bottom: auto;
-}
-
-.cta-position-center-center .orbit-polaroid-cta {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-3deg);
-    right: auto;
-    bottom: auto;
-}
-
-.cta-position-center-right .orbit-polaroid-cta {
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%) rotate(-3deg);
-    left: auto;
-    bottom: auto;
-}
-
-/* Bottom positions */
-.cta-position-bottom-left .orbit-polaroid-cta {
-    bottom: 1rem;
-    left: 1rem;
-    right: auto;
-    top: auto;
-}
-
-.cta-position-bottom-center .orbit-polaroid-cta {
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%) rotate(-3deg);
-    right: auto;
-    top: auto;
-}
-
-.cta-position-bottom-right .orbit-polaroid-cta {
-    bottom: 1rem;
-    right: 1rem;
-    left: auto;
-    top: auto;
-}
-
-/* ========================================
-   RESPONSIVE - MOBILE/TABLET (<1080px)
-   ======================================== */
-@media (max-width: 1080px) {
+/* iPad and larger tablets (768px - 1080px) */
+@media (max-width: 1080px) and (min-width: 768px) {
     .orbit-tabs-wrapper {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -325,7 +205,6 @@
 
     .orbit-tabs-left,
     .orbit-tabs-right {
-        position: static;
         flex-direction: row;
         flex-wrap: wrap;
         gap: 0.75rem;
@@ -346,45 +225,120 @@
     }
 
     .orbit-tabs-stage {
-        min-height: 400px;
-        order: 3;
+        min-height: 500px;
     }
 
+    /* Carousel for iPad - Container ~800px */
     .orbit-polaroid-stack {
-        height: 380px;
+        width: 12rem;
+        height: 15.5rem;
     }
 
-    .orbit-polaroid {
-        max-width: 280px;
-        padding: 10px;
-        padding-bottom: 30px;
-    }
-
-    .orbit-polaroid-cta {
-        bottom: -10px;
-        right: -10px;
-        padding: 0.6rem 1.2rem;
-        font-size: 0.85rem;
+    .orbit-polaroid img {
+        max-height: 13rem;
     }
 }
 
-@media (max-width: 640px) {
+/* Small tablets and large phones (640px - 767px) */
+@media (max-width: 767px) and (min-width: 640px) {
     .orbit-tabs-container {
         padding: 1rem;
     }
 
+    .orbit-tabs-wrapper {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .orbit-tabs-left,
+    .orbit-tabs-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+
     .orbit-tab-button {
-        min-width: 100px;
-        padding: 0.75rem 0.875rem;
-        font-size: 0.85rem;
+        flex: 0 1 auto;
+        text-align: center !important;
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .orbit-tabs-stage {
+        min-height: 400px;
     }
 
     .orbit-polaroid-stack {
-        height: 320px;
+        width: 11rem;
+        height: 14rem;
     }
 
-    .orbit-polaroid {
-        max-width: 240px;
+    .orbit-polaroid img {
+        max-height: 11.5rem;
+    }
+}
+
+/* Mobile phones (< 640px) */
+@media (max-width: 640px) {
+    .orbit-tabs-container {
+        padding: 1rem 0.5rem;
+    }
+
+    /* Vertical layout: tabs on top, content below */
+    .orbit-tabs-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 1rem;
+    }
+
+    .orbit-tabs-left,
+    .orbit-tabs-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+
+    .orbit-tab-button {
+        flex: 0 1 auto;
+        text-align: center !important;
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        min-width: fit-content;
+    }
+
+    .orbit-tab-button:hover,
+    .orbit-tabs-right .orbit-tab-button:hover {
+        transform: translateY(-2px);
+    }
+
+    .orbit-tabs-stage {
+        min-height: 450px;
+        order: 3;
+    }
+
+    .orbit-tabs-left {
+        order: 1;
+    }
+
+    .orbit-tabs-right {
+        order: 2;
+    }
+
+    .orbit-polaroid-stack {
+        width: 80%;
+        max-width: 16rem;
+        height: 21rem;
+    }
+
+    .orbit-polaroid img {
+        max-height: none;
+    }
+
+    .orbit-polaroid-cta {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.9rem;
     }
 }
 
@@ -392,34 +346,15 @@
    ACCESSIBILITY
    ======================================== */
 .orbit-tab-button:focus-visible {
-    outline: none;
+    outline: 2px solid #2196F3;
+    outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
 
     .orbit-tab-button,
     .orbit-polaroid,
-    .orbit-polaroid-cta,
-    .orbit-tab-content {
+    .orbit-polaroid-cta {
         transition: none;
     }
-}
-
-/* ========================================
-   UTILITY CLASSES
-   ======================================== */
-.orbit-hidden {
-    display: none !important;
-}
-
-.orbit-sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
 }
