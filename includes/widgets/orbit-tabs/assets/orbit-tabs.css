@@ -32,25 +32,33 @@
 
 /* ========================================
    GRID LAYOUT - DESKTOP
+   EDIT HERE to change spacing between columns
    ======================================== */
 .orbit-tabs-wrapper {
     display: grid;
     grid-template-columns: auto 1fr auto;
+    /* LEFT | CENTER | RIGHT */
     gap: 2rem;
+    /* Space between columns */
     align-items: center;
     min-height: 500px;
 }
 
 /* ========================================
    LATERAL COLUMNS (TAB CONTROLS)
+   EDIT HERE to change tab button spacing
    ======================================== */
 .orbit-tabs-left,
 .orbit-tabs-right {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    /* Space between tab buttons */
 }
 
+/* ========================================
+   TAB BUTTON STYLES
+   ======================================== */
 .orbit-tab-button {
     background: #ffffff;
     border: none;
@@ -66,11 +74,16 @@
     word-wrap: break-word;
 }
 
-/* Text alignment based on column */
+/* ========================================
+   TEXT ALIGNMENT BY COLUMN
+   EDIT HERE to change tab text alignment
+   ======================================== */
+/* LEFT COLUMN TABS - Align text to the left */
 .orbit-tabs-left .orbit-tab-button {
     text-align: left;
 }
 
+/* RIGHT COLUMN TABS - Align text to the right */
 .orbit-tabs-right .orbit-tab-button {
     text-align: right;
 }
@@ -145,12 +158,14 @@
 }
 
 /* ========================================
-   POLAROID IMAGE STACK
+   POLAROID IMAGE DISPLAY
+   EDIT HERE to change image size and effects
    ======================================== */
 .orbit-polaroid-stack {
     position: relative;
     width: 100%;
     height: 450px;
+    /* Height of image area */
     perspective: 1000px;
 }
 
@@ -159,50 +174,35 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    /* Center the image */
     background: #ffffff;
+    /* Polaroid white border */
     padding: var(--orbit-polaroid-border);
+    /* Border size (12px) */
     padding-bottom: calc(var(--orbit-polaroid-border) * 2.5);
+    /* Extra bottom space */
     box-shadow: var(--orbit-polaroid-shadow);
+    /* Shadow effect */
     border-radius: 2px;
     transition: var(--orbit-tabs-transition);
     cursor: pointer;
     max-width: 320px;
-}
-
-/* Cylindrical carousel effect - 3 images visible */
-/* Left image */
-.orbit-polaroid:nth-child(1) {
-    transform: translate(-50%, -50%) translateX(-120%) rotate(-15deg);
-    z-index: 1;
-    opacity: 0.7;
-}
-
-/* Center image (active) */
-.orbit-polaroid:nth-child(2) {
-    transform: translate(-50%, -50%) rotate(0deg);
-    z-index: 3;
+    /* Maximum image width */
     opacity: 1;
+    /* Full opacity */
+    z-index: 2;
 }
 
-/* Right image */
-.orbit-polaroid:nth-child(3) {
-    transform: translate(-50%, -50%) translateX(120%) rotate(15deg);
-    z-index: 1;
-    opacity: 0.7;
-}
-
-/* Hide additional images beyond the 3 visible */
-.orbit-polaroid:nth-child(n+4) {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-/* Hover effect - pop effect for center image only */
-.orbit-polaroid:nth-child(2):hover {
-    transform: translate(-50%, -50%) scale(1.1);
+/* ========================================
+   HOVER EFFECT
+   EDIT HERE to change hover animation
+   ======================================== */
+.orbit-polaroid:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    /* Slight zoom on hover */
     z-index: 10;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+    /* Stronger shadow */
 }
 
 .orbit-polaroid img {
