@@ -1,6 +1,6 @@
 # Orbit Customs - WordPress Plugin
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)
 ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-brightgreen.svg)
 ![PHP](https://img.shields.io/badge/PHP-7.3%2B-purple.svg)
 ![Elementor](https://img.shields.io/badge/Elementor-Compatible-orange.svg)
@@ -336,7 +336,14 @@ Look for these comments in the CSS:
 
 ---
 
-## � Changelog
+##  Changelog
+
+### Version 1.1.1 (2026-01-20)
+- 🐛 **FIXED**: Removed unwanted opacity on polaroid images (now 100% visible)
+- 🐛 **FIXED**: Removed cylindrical carousel effect (each tab has single image)
+- 🐛 **FIXED**: Simplified image display - centered, clear, no rotations
+- 🔧 **IMPROVED**: Added clear CSS comments with line numbers for easy customization
+- 🔧 **IMPROVED**: Better hover effect (5% zoom instead of complex transforms)
 
 ### Version 1.1.0 (2026-01-20)
 - ✨ **NEW**: Separate left/right tab repeaters
