@@ -8,11 +8,20 @@
 
 	gsap.registerPlugin(ScrollTrigger);
 
+	/* Guard: track initialized containers to prevent double init */
+	const initializedContainers = new WeakSet();
+
 	/**
 	 * Zoom Gallery Controller
 	 */
 	class EpwZoomGalleryController {
 		constructor(container) {
+			/* Prevent double initialization */
+			if (initializedContainers.has(container)) {
+				return;
+			}
+			initializedContainers.add(container);
+
 			this.container = container;
 			this.inner = container.querySelector('.epw-zoom-inner');
 			this.items = gsap.utils.toArray(container.querySelectorAll('.epw-zoom-item'));
@@ -21,16 +30,16 @@
 				return;
 			}
 
-			// Read config from data attribute
+			/* Read config from data attribute */
 			const configAttr = container.getAttribute('data-gallery-config');
 			this.config = configAttr ? JSON.parse(configAttr) : {};
 			this.config.scrub = this.config.scrub !== false;
 			this.config.pin = this.config.pin !== false;
-			this.config.scaleStart = this.config.scaleStart || 1;
-			this.config.scaleEnd = this.config.scaleEnd || 2.5;
-			this.config.fadeStart = this.config.fadeStart || 0.6;
+			this.config.scaleStart = parseFloat(this.config.scaleStart) || 1;
+			this.config.scaleEnd = parseFloat(this.config.scaleEnd) || 2.5;
+			this.config.fadeStart = parseFloat(this.config.fadeStart) || 0.6;
 
-			// Respect reduced motion
+			/* Respect reduced motion */
 			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 				this.setupReducedMotion();
 				return;
@@ -43,7 +52,7 @@
 			const itemCount = this.items.length;
 			const { scaleStart, scaleEnd, fadeStart, scrub, pin } = this.config;
 
-			// Set initial state: all items stacked, first on top
+			/* Set initial state: all items stacked, first on top */
 			this.items.forEach((item, i) => {
 				gsap.set(item, {
 					scale: scaleStart,
@@ -52,14 +61,17 @@
 				});
 			});
 
-			// Create ScrollTrigger timeline
-			const scrollDistance = (itemCount - 1) * 100; // vh units
+			/*
+			 * Use a function for `end` so invalidateOnRefresh recalculates
+			 * on resize / orientation change. Each image gets 100vh of scroll.
+			 */
+			const scrollVh = (itemCount - 1) * 100;
 
 			const tl = gsap.timeline({
 				scrollTrigger: {
 					trigger: this.container,
 					start: 'top top',
-					end: '+=' + (scrollDistance * window.innerHeight / 100),
+					end: () => '+=' + (scrollVh * window.innerHeight / 100),
 					scrub: scrub ? 1 : false,
 					pin: pin ? this.inner : false,
 					anticipatePin: 1,
@@ -67,25 +79,38 @@
 				}
 			});
 
-			// Animate each item except the last (it just stays visible)
+			/*
+			 * Animate each item except the last (it stays visible).
+			 * fadeStart controls when opacity begins fading within each
+			 * item's segment: 0 = immediate fade, 0.6 = fade after 60%.
+			 */
 			this.items.forEach((item, i) => {
-				if (i === itemCount - 1) return; // Last item stays
+				if (i === itemCount - 1) return;
 
-				const position = i / (itemCount - 1);
-				const duration = 1 / (itemCount - 1);
+				const segStart = i / (itemCount - 1);
+				const segDuration = 1 / (itemCount - 1);
 
-				// Scale up and fade out
+				/* Scale runs the full segment */
 				tl.to(item, {
 					scale: scaleEnd,
-					opacity: 0,
-					duration: duration,
+					duration: segDuration,
 					ease: 'none',
-				}, position);
+				}, segStart);
+
+				/* Opacity fades after fadeStart fraction of the segment */
+				const fadeDelay = segDuration * fadeStart;
+				const fadeDuration = segDuration * (1 - fadeStart);
+
+				tl.to(item, {
+					opacity: 0,
+					duration: fadeDuration,
+					ease: 'power1.in',
+				}, segStart + fadeDelay);
 			});
 		}
 
 		setupReducedMotion() {
-			// Show only first image, hide others
+			/* Show only first image, hide others */
 			this.items.forEach((item, i) => {
 				if (i > 0) {
 					gsap.set(item, { opacity: 0 });
@@ -99,6 +124,7 @@
 					st.kill();
 				}
 			});
+			initializedContainers.delete(this.container);
 		}
 	}
 
@@ -112,34 +138,39 @@
 		});
 	}
 
-	// Initialize
+	/* Initialize on DOM ready */
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', initEpwZoomGalleries);
 	} else {
 		initEpwZoomGalleries();
 	}
 
-	// Elementor support
-	if (typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.hooks) {
-		window.elementorFrontend.hooks.addAction('frontend/element_ready/zoom-gallery.default', function ($scope) {
-			const container = $scope[0].querySelector('.epw-zoom-container');
-			if (container) {
-				new EpwZoomGalleryController(container);
-			}
-		});
-	}
-
-	if (typeof jQuery !== 'undefined') {
-		jQuery(window).on('elementor/frontend/init', function () {
-			if (typeof elementorFrontend !== 'undefined') {
-				elementorFrontend.hooks.addAction('frontend/element_ready/zoom-gallery.default', function ($scope) {
+	/*
+	 * Elementor frontend support (single registration).
+	 * We use a flag to avoid registering the hook twice.
+	 */
+	function registerElementorHook() {
+		if (typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.hooks) {
+			window.elementorFrontend.hooks.addAction(
+				'frontend/element_ready/zoom-gallery.default',
+				function ($scope) {
 					const container = $scope[0].querySelector('.epw-zoom-container');
 					if (container) {
+						/* Remove from WeakSet so re-init works after Elementor re-render */
+						initializedContainers.delete(container);
 						new EpwZoomGalleryController(container);
 					}
-				});
-			}
-		});
+				}
+			);
+		}
+	}
+
+	/* Try immediate registration (editor already loaded) */
+	registerElementorHook();
+
+	/* Also register on init event for fresh page loads */
+	if (typeof jQuery !== 'undefined') {
+		jQuery(window).on('elementor/frontend/init', registerElementorHook);
 	}
 
 })();

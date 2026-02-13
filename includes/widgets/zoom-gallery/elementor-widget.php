@@ -228,17 +228,11 @@ class Elementor_Zoom_Gallery_Widget extends \Elementor\Widget_Base
             'scale_start',
             array(
                 'label' => __('Scale Start', 'epw-jdt'),
-                'type' => \Elementor\Controls_Manager::SLIDER,
-                'range' => array(
-                    'px' => array(
-                        'min' => 1,
-                        'max' => 3,
-                        'step' => 0.1,
-                    ),
-                ),
-                'default' => array(
-                    'size' => 1,
-                ),
+                'type' => \Elementor\Controls_Manager::NUMBER,
+                'min' => 0.5,
+                'max' => 3,
+                'step' => 0.1,
+                'default' => 1,
             )
         );
 
@@ -246,35 +240,23 @@ class Elementor_Zoom_Gallery_Widget extends \Elementor\Widget_Base
             'scale_end',
             array(
                 'label' => __('Scale End', 'epw-jdt'),
-                'type' => \Elementor\Controls_Manager::SLIDER,
-                'range' => array(
-                    'px' => array(
-                        'min' => 1,
-                        'max' => 5,
-                        'step' => 0.1,
-                    ),
-                ),
-                'default' => array(
-                    'size' => 2.5,
-                ),
+                'type' => \Elementor\Controls_Manager::NUMBER,
+                'min' => 1,
+                'max' => 5,
+                'step' => 0.1,
+                'default' => 2.5,
             )
         );
 
         $this->add_control(
             'fade_start',
             array(
-                'label' => __('Fade Start (fraction of scroll)', 'epw-jdt'),
-                'type' => \Elementor\Controls_Manager::SLIDER,
-                'range' => array(
-                    'px' => array(
-                        'min' => 0,
-                        'max' => 1,
-                        'step' => 0.05,
-                    ),
-                ),
-                'default' => array(
-                    'size' => 0.6,
-                ),
+                'label' => __('Fade Start (0 = immediate, 1 = end)', 'epw-jdt'),
+                'type' => \Elementor\Controls_Manager::NUMBER,
+                'min' => 0,
+                'max' => 1,
+                'step' => 0.05,
+                'default' => 0.6,
             )
         );
 
@@ -583,9 +565,9 @@ class Elementor_Zoom_Gallery_Widget extends \Elementor\Widget_Base
         $gallery_config = array(
             'scrub' => 'yes' === $settings['enable_scrub'],
             'pin' => 'yes' === $settings['enable_pin'],
-            'scaleStart' => !empty($settings['scale_start']['size']) ? (float) $settings['scale_start']['size'] : 1,
-            'scaleEnd' => !empty($settings['scale_end']['size']) ? (float) $settings['scale_end']['size'] : 2.5,
-            'fadeStart' => !empty($settings['fade_start']['size']) ? (float) $settings['fade_start']['size'] : 0.6,
+            'scaleStart' => !empty($settings['scale_start']) ? (float) $settings['scale_start'] : 1,
+            'scaleEnd' => !empty($settings['scale_end']) ? (float) $settings['scale_end'] : 2.5,
+            'fadeStart' => isset($settings['fade_start']) ? (float) $settings['fade_start'] : 0.6,
         );
 
         $total_items = count($items);
