@@ -1,9 +1,12 @@
 /**
- * Custom Zoom Gallery – GSAP ScrollTrigger
+ * Custom Zoom Gallery – GSAP ScrollTrigger v2.0
  *
  * Stack effect: images piled with random rotations / offsets.
  * On scroll each card straightens, scales up to a configured
  * max-width, then fades out to reveal the next card.
+ *
+ * Backward-compatible: accepts both old config (scaleStart/scaleEnd)
+ * and new config (maxWidth).
  */
 
 (function () {
@@ -19,14 +22,14 @@
 	   -------------------------------------------------- */
 	function seeded(i) {
 		const x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
-		return x - Math.floor(x); // 0 … 1
+		return x - Math.floor(x);
 	}
 
 	function cardPose(index) {
 		return {
-			rotation: (seeded(index) - 0.5) * 24,           // –12 … +12 deg
-			x:        (seeded(index + 50) - 0.5) * 40,      // –20 … +20 px
-			y:        (seeded(index + 99) - 0.5) * 30,      // –15 … +15 px
+			rotation: (seeded(index) - 0.5) * 24,
+			x:        (seeded(index + 50) - 0.5) * 40,
+			y:        (seeded(index + 99) - 0.5) * 30,
 		};
 	}
 
@@ -46,7 +49,7 @@
 
 			if (this.items.length < 2) return;
 
-			/* ---- config ---- */
+			/* ---- config (backward compatible) ---- */
 			const raw = container.getAttribute('data-gallery-config');
 			const c   = raw ? JSON.parse(raw) : {};
 
@@ -70,7 +73,7 @@
 
 		/* ---------- main animation ---------- */
 		build() {
-			const { items, cfg, inner } = this;
+			const { items, cfg, inner, container } = this;
 			const n = items.length;
 
 			/*
@@ -93,13 +96,11 @@
 			 * 2. ScrollTrigger.
 			 *
 			 *    Scroll distance = (n-1) * height of the inner panel.
-			 *    This way each image gets exactly one "panel-height"
-			 *    worth of scroll regardless of the container size
-			 *    (300 px, 100 vh, whatever Elementor sets).
+			 *    Uses a function so invalidateOnRefresh works on resize.
 			 */
 			const tl = gsap.timeline({
 				scrollTrigger: {
-					trigger            : this.container,
+					trigger            : container,
 					start              : 'top top',
 					end                : () => {
 						const h = inner.offsetHeight || window.innerHeight;
@@ -119,7 +120,7 @@
 			 *    Phase B  →  fade out + overshoot scale slightly
 			 */
 			items.forEach((el, i) => {
-				if (i === n - 1) return;          // last stays
+				if (i === n - 1) return;
 
 				const img = el.querySelector('img');
 
@@ -129,11 +130,10 @@
 				const phaseB   = segDur * (1 - cfg.fadeStart);
 
 				/*
-				 * Scale ratio: from current (natural) size to maxWidth.
-				 * Use the rendered width so it works even before
-				 * naturalWidth is available (lazy-loaded images).
+				 * Scale ratio: current rendered width → maxWidth.
+				 * Clamp to at least 1.2 so there's always visible growth.
 				 */
-				const baseW     = (img && img.offsetWidth) || 260;
+				const baseW     = (img && img.offsetWidth > 0) ? img.offsetWidth : 260;
 				const scaleGoal = Math.max(cfg.maxWidth / baseW, 1.2);
 
 				// Phase A — straighten & grow
@@ -181,14 +181,19 @@
 	}
 
 	/* ---- Elementor front-end (single registration) ---- */
+	let elementorRegistered = false;
+
 	function registerElementor() {
+		if (elementorRegistered) return;
 		if (!window.elementorFrontend?.hooks) return;
+		elementorRegistered = true;
+
 		window.elementorFrontend.hooks.addAction(
 			'frontend/element_ready/zoom-gallery.default',
 			function ($scope) {
 				const c = $scope[0].querySelector('.epw-zoom-container');
 				if (c) {
-					initialized.delete(c);      // allow re-init after edit
+					initialized.delete(c);
 					new ZoomGallery(c);
 				}
 			}
